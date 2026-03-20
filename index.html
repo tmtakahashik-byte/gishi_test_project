@@ -1,0 +1,1091 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>中学生による3Dプリンタ義手開発｜現況整理と打ち手</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#111b2e;
+      --muted:#a9b6d3;
+      --text:#eef3ff;
+      --accent:#7dd3fc;
+      --accent2:#a78bfa;
+      --warn:#fbbf24;
+      --ok:#34d399;
+      --bad:#fb7185;
+      --line:rgba(255,255,255,.12);
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --soft:rgba(255,255,255,.05);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:linear-gradient(180deg,#071022, #0b1220 35%, #070b14);
+      color:var(--text);
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+      line-height:1.7
+    }
+    a{color:var(--accent);text-decoration:none}
+    a:hover{opacity:.92;text-decoration:underline}
+    header{padding:28px 18px 10px;max-width:1160px;margin:0 auto}
+    .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;align-items:stretch}
+    .heroCard{
+      background:linear-gradient(135deg,rgba(125,211,252,.18),rgba(167,139,250,.12));
+      border:1px solid var(--line);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      padding:18px 18px 14px;
+    }
+    .heroCard h1{margin:.2rem 0 .4rem;font-size:1.35rem}
+    .badgeRow{display:flex;flex-wrap:wrap;gap:8px;margin:.6rem 0 0}
+    .badge{border:1px solid var(--line);background:rgba(255,255,255,.06);padding:6px 10px;border-radius:999px;font-size:.85rem;color:var(--muted)}
+    .heroMedia{
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--line);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+    .heroMedia img{width:100%;height:260px;object-fit:cover;display:block}
+    .cap{padding:10px 12px;color:var(--muted);font-size:.86rem;border-top:1px solid var(--line)}
+    nav{max-width:1160px;margin:10px auto 0;padding:0 18px 14px}
+    .toc{
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+      display:flex;flex-wrap:wrap;gap:10px;
+    }
+    .toc a{
+      font-size:.92rem;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      padding:8px 10px;border-radius:999px;color:var(--text)
+    }
+    main{max-width:1160px;margin:0 auto;padding:0 18px 44px}
+    section{margin:16px 0}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+    .card{
+      grid-column:span 12;
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px 14px 12px;
+      box-shadow:0 8px 20px rgba(0,0,0,.25);
+    }
+    .card h2{margin:.2rem 0 .6rem;font-size:1.06rem}
+    .card h3{margin:1rem 0 .4rem;font-size:1.0rem}
+    .card h4{margin:.9rem 0 .35rem;font-size:.98rem;color:#dbe7ff}
+    .muted{color:var(--muted)}
+    .split{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    @media (max-width:920px){
+      .hero{grid-template-columns:1fr}
+      .split{grid-template-columns:1fr}
+    }
+    ul{margin:.35rem 0 .45rem 1.2rem}
+    li{margin:.25rem 0}
+    .note{border-left:4px solid var(--accent);padding:.65rem .8rem;background:rgba(125,211,252,.08);border-radius:10px;margin:.7rem 0}
+    .warn{border-left:4px solid var(--warn);background:rgba(251,191,36,.08)}
+    .ok{border-left:4px solid var(--ok);background:rgba(52,211,153,.08)}
+    .bad{border-left:4px solid var(--bad);background:rgba(251,113,133,.08)}
+    .kpi{display:flex;flex-wrap:wrap;gap:10px;margin:.6rem 0}
+    .pill{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:rgba(255,255,255,.05);min-width:240px}
+    .pill b{display:block;margin-bottom:4px}
+    table{width:100%;border-collapse:collapse;margin:.6rem 0}
+    th,td{border-bottom:1px solid var(--line);padding:10px 8px;vertical-align:top}
+    th{color:var(--muted);font-weight:600;text-align:left}
+    .small{font-size:.92rem}
+    code{background:rgba(255,255,255,.07);padding:.15rem .35rem;border-radius:8px}
+    .hr{height:1px;background:var(--line);margin:10px 0}
+    .mediaGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    @media (max-width:920px){ .mediaGrid{grid-template-columns:1fr} }
+    .thumb{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:rgba(255,255,255,.03)}
+    .thumb img{width:100%;height:170px;object-fit:cover;display:block}
+    .thumb .cap2{padding:10px 10px;color:var(--muted);font-size:.86rem;border-top:1px solid var(--line)}
+    .tagRow{display:flex;flex-wrap:wrap;gap:8px;margin:.35rem 0 .6rem}
+    .tag{font-size:.82rem;border:1px solid var(--line);background:var(--soft);padding:6px 9px;border-radius:999px;color:var(--muted)}
+    .callout{
+      border:1px dashed rgba(255,255,255,.25);
+      background:rgba(255,255,255,.03);
+      border-radius:14px;
+      padding:12px 12px 10px;
+      margin:.7rem 0;
+    }
+    .miniToc{
+      display:flex;flex-wrap:wrap;gap:8px;
+      padding:10px;border-radius:14px;border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      margin:.6rem 0;
+    }
+    .miniToc a{
+      font-size:.86rem;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      padding:6px 9px;border-radius:999px;color:var(--text)
+    }
+    .src{font-size:.9rem;color:var(--muted)}
+    .src a{color:var(--muted);text-decoration:underline}
+    footer{max-width:1160px;margin:0 auto;padding:16px 18px 30px;color:var(--muted)}
+    @media print{
+      body{background:#fff;color:#000}
+      .card, .heroCard, .heroMedia, nav{box-shadow:none}
+      a{color:#000;text-decoration:underline}
+      .toc{display:none}
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="hero">
+    <div class="heroCard">
+      <h1>中学生による3Dプリンタ義手開発｜現況整理と打ち手</h1>
+      <p class="muted">
+        目的は「<b>家庭の金銭負担（試作・材料・検証・広報・移動）を減らす</b>」ことと、
+        「<b>安全・信用・継続の体制</b>をつくる」こと。
+      </p>
+
+      <div class="note ok">
+        <b>結論（要約）</b><br/>
+        現段階（個人事業主登録なし／収益なし）では、まず<b>助成・寄付（財団/基金）＋現物支援＋クラファン（実証費用限定）</b>で負担を下げ、
+        同時に<b>医療・専門職連携</b>と<b>受け皿（学校/任意団体/NPO）</b>を整える。<br/>
+        経産省系の補助金は<b>2年目以降（体制が整った段階）</b>で検討が現実的。
+      </div>
+
+      <div class="badgeRow">
+        <div class="badge">軸① 資金：助成/寄付・現物支援・クラファン（厚め）</div>
+        <div class="badge">軸② 信用：医療/安全・記録・倫理</div>
+        <div class="badge">軸③ 継続：受け皿・契約/会計・知財/オープン戦略</div>
+      </div>
+    </div>
+
+    <div class="heroMedia">
+      <img src="https://sspark.genspark.ai/cfimages?u1=2l5LV4AkKgSH66IyyjIA0RhJIZrGQLuvJv2xTd%2Fj%2FrSn8nM25fZnYTlVy2j53ny%2FEO1TtMt4Cln3N126XXqrJcepehCnYKtW6pFiQqmoMjlcqBC6CZYBmtRD1%2Ft52mJSPvYq%2BbDeKcic&u2=pfq403GBluaOlJhn&width=2560"
+           alt="3Dプリント義手の参考画像" />
+      <div class="cap">
+        <b>目的：</b>保護者・支援者へ「完成イメージ」を共有（説明資料の冒頭に使いやすい）<br/>
+        出典：Wikimedia Commons「3d printed hand」
+        <a href="https://commons.wikimedia.org/wiki/File:3d_printed_hand_(15642062429).jpg" target="_blank" rel="noopener">[Source]</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <div class="toc">
+    <a href="#def">0. 前提定義</a>
+    <a href="#now">1. 現状（強み/課題）</a>
+    <a href="#fund">2. 資金負担を減らす（現段階）</a>
+    <a href="#cf-deep">2-3. クラファン徹底解説（厚め）</a>
+    <a href="#grants-by-host">3. 助成の当たり方（受け皿別）</a>
+    <a href="#trust">4. 信用（医療/安全）</a>
+    <a href="#org">5. 受け皿/契約（未成年）</a>
+    <a href="#ip">6. 知財とオープン戦略</a>
+    <a href="#steps">7. 推奨ロードマップ</a>
+    <a href="#actions">8. 次の一手（チェックリスト）</a>
+    <a href="#links">9. リンク集</a>
+    <a href="#media">10. 参考画像・動画（用途つき）</a>
+  </div>
+</nav>
+
+<main>
+
+  <!-- 0 -->
+  <section id="def" class="grid">
+    <div class="card">
+      <h2>0. 前提定義（まずここを揃える）</h2>
+      <div class="split">
+        <div>
+          <h3>プロジェクトの言い切り（例）</h3>
+          <ul>
+            <li><b>誰の</b>：成長期の子ども/若年の上肢欠損・機能補助ニーズ</li>
+            <li><b>何を</b>：3Dプリンタ活用で、フィット調整しやすい補助具（義手/装具）</li>
+            <li><b>どんな価値</b>：低コスト・短納期・改良サイクルの速さ</li>
+          </ul>
+          <div class="note warn small">
+            医療領域では「治療効果」等の断定表現がリスクになり得ます。発信は「開発・試作・検証」の範囲を明確にし、誇張を避けてください。
+          </div>
+        </div>
+        <div>
+          <h3>保護者視点のゴール</h3>
+          <div class="kpi">
+            <div class="pill"><b>短期（〜6ヶ月）</b>材料費・試作費の外部化（助成/寄付・現物協賛・クラファン）</div>
+            <div class="pill"><b>中期（6ヶ月〜2年）</b>医療連携・検証の型・受け皿の確立</div>
+            <div class="pill"><b>長期（2年〜）</b>事業化/法人化/知財・提供モデル（必要に応じ補助金も）</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1 -->
+  <section id="now" class="grid">
+    <div class="card">
+      <h2>1. 現状の構造整理（強みと課題）</h2>
+
+      <div class="split">
+        <div>
+          <h3>強み（伸ばすべき資産）</h3>
+          <ul>
+            <li><b>強いストーリー性</b>（中学生 × 社会課題 × ものづくり）</li>
+            <li><b>試作の反復が速い</b>（3Dプリンタで低コスト・短時間）</li>
+            <li><b>企業CSR・教育・メディア</b>の関心領域に重なる</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3>課題（放置できない部分）</h3>
+          <ul>
+            <li><b>継続資金</b>：単発資金だけだと消耗する</li>
+            <li><b>医療/安全性の信用</b>：連携なしだと社会実装で止まる</li>
+            <li><b>未成年の契約・責任</b>：個人活動のままだと法務/会計/炎上リスクが増える</li>
+            <li><b>体制</b>：検証、記録、問い合わせ対応が属人化</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="note">
+        以降は「資金」だけでなく、<b>信用（安全）と受け皿（契約・会計）</b>を同時に整えることで、結果として保護者の金銭・時間負担が下がる設計にします。
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 資金 -->
+  <section id="fund" class="grid">
+    <div class="card">
+      <h2>2. 資金負担を減らす選択肢（現段階→中長期）</h2>
+
+      <div class="note ok">
+        <b>前提（現段階）</b><br/>
+        まだ <b>個人事業主登録なし／収益なし／非収益モデル</b> の段階では、申請要件の都合で「経産省系の補助金」は難しいケースが多いです。<br/>
+        当面は <b>①助成・寄付（財団/基金） ②現物支援（材料・印刷協力） ③クラファン（実証費用限定）</b> を主軸にし、<b>2年目以降に補助金を検討</b>するのが事故が少ない設計です。
+      </div>
+
+      <h3 id="fund-in-kind">2-1. 現物支援・協賛（最短で家計負担が下がる）</h3>
+      <div class="tagRow">
+        <span class="tag">フィラメント提供</span>
+        <span class="tag">部品・工具提供</span>
+        <span class="tag">3Dプリント外注協力</span>
+        <span class="tag">設計レビュー（技術支援）</span>
+        <span class="tag">移動・会場提供</span>
+      </div>
+      <ul>
+        <li>現金より早い：<b>材料/部品/プリント協力</b>など「現物支援」は、家計負担の即時削減に効きます</li>
+        <li>提案のコツ：協賛メニューを「現金」「現物」「技術支援」に分け、企業の出しやすい形にする</li>
+      </ul>
+
+      <h3 id="fund-grants">2-2. 助成・寄付（財団/基金）— 個人段階で最優先の“外部資金”</h3>
+      <div class="note warn">
+        <b>重要</b>：助成は「個人NG・団体OK」が多いです。<br/>
+        その場合は、<b>学校（探究/部活動）・PTA・任意団体・協力NPO</b>など、申請できる“受け皿”を作る/借りると前に進みます。
+      </div>
+
+      <h4>(1) 助成情報を“探す”ための入口（横断検索が最強）</h4>
+      <ul>
+        <li>
+          <b>CANPAN FIELDS：助成制度一覧</b>（公益活動団体向け助成データベース）：
+          <a href="https://fields.canpan.info/grant/" target="_blank" rel="noopener">https://fields.canpan.info/grant/</a>
+          <span class="src"> <a href="https://fields.canpan.info/grant/" target="_blank" rel="noopener">[Source]</a></span>
+        </li>
+        <li>
+          <b>全国社会福祉協議会：福祉の助成情報</b>（民間助成の入口）：
+          <a href="https://www.shakyo.or.jp/guide/sponsor/index.html" target="_blank" rel="noopener">https://www.shakyo.or.jp/guide/sponsor/index.html</a>
+          <span class="src"> <a href="https://www.shakyo.or.jp/guide/sponsor/index.html" target="_blank" rel="noopener">[Source]</a></span>
+        </li>
+        <li>
+          <b>助成財団センター</b>（助成・奨学金情報の入口）：
+          <a href="https://www.jfc.or.jp/" target="_blank" rel="noopener">https://www.jfc.or.jp/</a>
+          <span class="src"> <a href="https://www.jfc.or.jp/" target="_blank" rel="noopener">[Source]</a></span>
+        </li>
+      </ul>
+
+      <h4>(2) “団体の受け皿”があれば狙える助成（例）</h4>
+      <ul>
+        <li>
+          <b><a href="https://www.wam.go.jp/hp/cat/wamjosei/" target="_blank" rel="noopener">WAM助成（WAM NET）</a></b>：
+          NPO法人等のほか、<b>法人格のない団体（非営利任意団体）</b>も対象（※個人は対象外）
+          <a href="https://www.wam.go.jp/hp/guide-jyosei-outline-tabid-178/" target="_blank" rel="noopener">[Source]</a>
+        </li>
+        <li>
+          <b><a href="https://www.akaihane.or.jp/kikin/" target="_blank" rel="noopener">赤い羽根福祉基金</a></b>：
+          地域課題・制度のはざまの課題解決を支援
+          <a href="https://www.akaihane.or.jp/kikin/" target="_blank" rel="noopener">[Source]</a>
+        </li>
+      </ul>
+
+      <h4>(3) “教育・探究”として支援を取りにいく（個人段階と相性が良い）</h4>
+      <ul>
+        <li>
+          <b><a href="https://yumekikin.niye.go.jp/jyosei/index.html" target="_blank" rel="noopener">子どもゆめ基金</a></b>（体験活動等への助成・申請案内）
+          <a href="https://yumekikin.niye.go.jp/jyosei/index.html" target="_blank" rel="noopener">[Source]</a>
+        </li>
+        <li>
+          <b><a href="https://www.jss.or.jp/fukyu/mentor/index.html" target="_blank" rel="noopener">日本科学協会：サイエンスメンタープログラム</a></b>（中高生が専門家の助言を受けながら研究を進める）
+          <a href="https://www.jss.or.jp/fukyu/mentor/index.html" target="_blank" rel="noopener">[Source]</a>
+        </li>
+        <li>
+          <b><a href="https://www.jst.go.jp/cpse/stella/" target="_blank" rel="noopener">JST：次世代科学技術チャレンジプログラム</a></b>（参考）
+          <a href="https://www.jst.go.jp/cpse/stella/" target="_blank" rel="noopener">[Source]</a>
+        </li>
+      </ul>
+
+      <h4>(4) 福祉用具・支援機器の“開発”系（中長期で刺さる：連携・検証が鍵）</h4>
+      <ul>
+        <li>
+          <b><a href="https://www.techno-aids.or.jp/kaihatsu/" target="_blank" rel="noopener">テクノエイド協会：開発者向情報</a></b>
+          <a href="https://www.techno-aids.or.jp/kaihatsu/" target="_blank" rel="noopener">[Source]</a>
+        </li>
+      </ul>
+
+      <h3 id="fund-cf">2-3. クラウドファンディング（実務の要点）</h3>
+      <div class="callout">
+        <b>位置づけ：</b>クラファンは「資金」だけでなく、<b>実績（支援者・協力者・広報）を作る装置</b>として使う。用途は<b>実証実験費用</b>に寄せると安全。<br/>
+        プラットフォーム公式：<b><a href="https://camp-fire.jp/" target="_blank" rel="noopener">CAMPFIRE</a></b> /
+        <b><a href="https://readyfor.jp/" target="_blank" rel="noopener">READYFOR</a></b> /
+        <b><a href="https://www.makuake.com/" target="_blank" rel="noopener">Makuake</a></b>
+        <div class="src">
+          [Source] <a href="https://camp-fire.jp/" target="_blank" rel="noopener">CAMPFIRE</a> /
+          <a href="https://readyfor.jp/" target="_blank" rel="noopener">READYFOR</a> /
+          <a href="https://www.makuake.com/" target="_blank" rel="noopener">Makuake</a>
+        </div>
+      </div>
+
+      <div class="note warn small">
+        以降の「クラファン徹底解説」は、<b>保護者が“そのまま実行計画に落とせる”</b>ように、成功の分岐点・金額レンジ・リターン例・注意点までまとめています（次セクション）。
+      </div>
+
+      <h3 id="fund-subsidy">2-4. 経産省系の補助金は中長期（2年目以降）で検討</h3>
+      <div class="note warn small">
+        <b>位置づけ：</b>法人化/個人事業開始、会計・計画・実施体制が整った段階で「成長資金」として検討。<br/>
+        入口（情報収集）：<a href="https://mirasapo-plus.go.jp/" target="_blank" rel="noopener">ミラサポplus</a>
+        <a href="https://mirasapo-plus.go.jp/" target="_blank" rel="noopener">[Source]</a>
+      </div>
+      <ul class="small">
+        <li>（参考）<a href="https://portal.monodukuri-hojo.jp/" target="_blank" rel="noopener">ものづくり補助金（公式）</a> <a href="https://portal.monodukuri-hojo.jp/" target="_blank" rel="noopener">[Source]</a></li>
+        <li>（参考）<a href="https://www.jizokukanb.com/" target="_blank" rel="noopener">小規模事業者持続化補助金（公式）</a> <a href="https://www.jizokukanb.com/" target="_blank" rel="noopener">[Source]</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 2-3 Deep: Crowdfunding -->
+  <section id="cf-deep" class="grid">
+    <div class="card">
+      <h2>2-3. 中学生×3Dプリンタ義手｜クラウドファンディング徹底解説（厚め）</h2>
+
+      <div class="note ok">
+        <b>結論（要約100字以内）</b><br/>
+        テーマは非常に強く、適切設計なら<b>100万〜500万円</b>が現実ライン。メディア露出や企業連携で上振れもあるが、まずは<b>堅実に200万〜500万円</b>を狙う設計が安全。
+      </div>
+
+      <div class="miniToc">
+        <a href="#cf-structure">基本構造</a>
+        <a href="#cf-strength">強さ評価</a>
+        <a href="#cf-range">金額レンジ</a>
+        <a href="#cf-branch">成功の分岐点</a>
+        <a href="#cf-return">リターン例</a>
+        <a href="#cf-platform">プラットフォーム</a>
+        <a href="#cf-caution">注意点</a>
+        <a href="#cf-limit">限界と補完</a>
+        <a href="#cf-pro">戦略的な使い方</a>
+        <a href="#cf-next">次の一手</a>
+      </div>
+
+      <h3 id="cf-structure">1. クラウドファンディングの基本構造</h3>
+      <p class="muted">
+        クラファンは「共感を資金に変える仕組み」。本件はストーリーとビジュアルが強く、設計次第で成果が出やすい領域です。
+      </p>
+
+      <div class="split">
+        <div class="callout">
+          <h4>① 購入型（資金集めなら推奨）</h4>
+          <ul>
+            <li>リターン（返礼）あり</li>
+            <li>義手そのもの／グッズ／体験（見学・報告会）などを設計できる</li>
+            <li><b>今回のケースは、一部の購入型の方が“お金を集めやすい”　※用途は規制すること</b></li>
+          </ul>
+        </div>
+        <div class="callout">
+          <h4>② 寄付型</h4>
+          <ul>
+            <li>リターンなし（感謝・報告中心）</li>
+            <li>社会性は高いが、金額は伸びにくい傾向</li>
+            <li>ただし「医療領域で慎重に進める」場合は、寄付型の安心感が武器になることも</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3 id="cf-strength">2. この案件の「強さ評価」</h3>
+      <div class="kpi">
+        <div class="pill"><b>社会課題 × テクノロジー</b>義手（福祉）× 3Dプリンタ（ものづくり）</div>
+        <div class="pill"><b>中学生というストーリー</b>応援動機が生まれやすい</div>
+        <div class="pill"><b>ビジュアルで伝わる</b>完成品・試作の変化が一目で分かる</div>
+      </div>
+      <div class="note ok small">
+        結論：<b>クラファンで最も成功しやすいカテゴリの組み合わせ</b>。ただし医療領域は表現や約束に慎重さが必要。
+      </div>
+
+      <h3 id="cf-range">3. 資金調達の現実ライン（目安）</h3>
+      <table class="small">
+        <thead>
+          <tr><th>レベル</th><th>条件</th><th>想定金額</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><b>低</b></td><td>身内・SNSのみ</td><td>30万〜100万円</td></tr>
+          <tr><td><b>中</b></td><td>ストーリー整理＋拡散</td><td>100万〜300万円</td></tr>
+          <tr><td><b>高</b></td><td>メディア掲載あり</td><td>300万〜800万円</td></tr>
+          <tr><td><b>特大</b></td><td>企業協賛＋バズ</td><td>800万〜1,500万円</td></tr>
+        </tbody>
+      </table>
+
+      <div class="note warn">
+        <b>今回の現実ライン：</b><b>200万〜500万円が妥当</b><br/>
+        理由：テーマが強い一方、医療領域は慎重さが必要で、爆発的上振れより「堅実設計」が向く。
+      </div>
+
+      <h3 id="cf-branch">4. 成功の分岐点（ここで9割決まる）</h3>
+      <div class="split">
+        <div class="callout">
+          <h4>① ストーリー設計</h4>
+          <div class="note bad small">
+            <b>ダメな例：</b>「義手作ってます」
+          </div>
+          <div class="note ok small">
+            <b>良い例：</b><br/>
+            ・「子どもでも使える安価な義手（補助具）を実現したい」<br/>
+            ・「既存は〇万円 → これを〇万円以下に近づけたい」<br/>
+            → <b>“誰の何を解決するか”</b>を明確に
+          </div>
+        </div>
+        <div class="callout">
+          <h4>② 初速（最重要）</h4>
+          <ul>
+            <li>開始3日で伸び方が決まる</li>
+            <li><b>目標の30%を初動で取る</b></li>
+            <li>友人・知人・関係者で先に固める（初期支援者リスト化）</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3 id="cf-return">5. リターン設計（売上のエンジン）</h3>
+      <div class="note">
+        「作れるものしか出さない」が鉄則。試作品段階で“製品納品”を約束しすぎない設計が安全です。
+      </div>
+      <table class="small">
+        <thead>
+          <tr><th>価格帯例</th><th>リターン例</th><th>狙い</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>3,000円</td><td>応援メッセージ＋進捗報告</td><td>参加者を増やす（裾野）</td></tr>
+          <tr><td>10,000円</td><td>ミニ3Dモデル／制作レポート冊子（PDF可）</td><td>単価アップの入口</td></tr>
+          <tr><td>30,000円</td><td>名前刻印（Web掲載/報告書掲載）</td><td>応援の“可視化”</td></tr>
+          <tr><td>100,000円</td><td>開発パートナー枠（オンライン報告会、レビュー参加）</td><td>高単価支援（企業にも刺さる）</td></tr>
+        </tbody>
+      </table>
+
+      <h3 id="cf-platform">6. プラットフォーム選び（日本の主要どころ）</h3>
+      <ul>
+        <li><b>[CAMPFIRE](https://camp-fire.jp/)</b>：王道・初心者向け（購入型の運用がしやすい） <span class="src">[Source] <a href="https://camp-fire.jp/" target="_blank" rel="noopener">CAMPFIRE</a></span></li>
+        <li><b>[Makuake](https://www.makuake.com/)</b>：製品系・やや審査厳しめ（見せ方が重要） <span class="src">[Source] <a href="https://www.makuake.com/" target="_blank" rel="noopener">Makuake</a></span></li>
+        <li><b>[READYFOR](https://readyfor.jp/)</b>：社会課題系に強い（公益・福祉の文脈が合う） <span class="src">[Source] <a href="https://readyfor.jp/" target="_blank" rel="noopener">READYFOR</a></span></li>
+      </ul>
+
+      <div class="note ok">
+        <b>今回なら：</b><b>READYFOR または CAMPFIRE</b>が第一候補（社会課題×ストーリーの相性が良い）。
+      </div>
+
+      <h3 id="cf-caution">7. 注意点（医療領域＆未成年）</h3>
+      <div class="split">
+        <div class="note warn small">
+          <b>① 医療表現の規制・審査リスク</b><br/>
+          ・「治療効果」など断定は避ける<br/>
+          ・誇張表現は審査落ち・炎上リスク<br/>
+          → 表現は「開発」「検証」「改善」「実証」に寄せる
+        </div>
+        <div class="note warn small">
+          <b>② 未成年問題</b><br/>
+          ・親の同意・管理が必須<br/>
+          ・プラットフォーム側の要件も確認<br/>
+          → 受け皿（学校/任意団体/NPO）を併用すると運用が安定
+        </div>
+      </div>
+      <div class="note bad small">
+        <b>③ 作れるものしか出さない</b><br/>
+        試作品段階で「過剰な約束」は危険（納期遅延・返金・信用毀損）。
+      </div>
+
+      <h3 id="cf-limit">8. クラファン単体の限界（だから“セット”が正解）</h3>
+      <ul>
+        <li>一時的資金：◎</li>
+        <li>継続事業：△</li>
+      </ul>
+      <div class="note">
+        <b>結論：</b><b>助成・現物支援・企業連携</b>とセットで「継続できる仕組み」にするのが正解。
+      </div>
+
+      <h3 id="cf-pro">9. 戦略的な使い方（プロ視点）</h3>
+      <div class="kpi">
+        <div class="pill"><b>実証実験費用に使う</b>安全・耐久・装着性の検証へ</div>
+        <div class="pill"><b>支援者＝初期ユーザー</b>応援者をコミュニティ化</div>
+        <div class="pill"><b>実績として見せる</b>次の助成・企業協賛に繋ぐ</div>
+      </div>
+
+      <h3 id="cf-next">10. 次の一手（具体）</h3>
+      <div class="split">
+        <div class="callout">
+          <h4>推奨セット（最短で形にする）</h4>
+          <ul>
+            <li><b>目標金額：</b>300万円（目安）</li>
+            <li><b>初期支援者：</b>30人（開始前に確保）</li>
+            <li><b>ストーリー軸：</b>「価格破壊（負担軽減）」＋「安全に検証」</li>
+            <li><b>信用：</b>医療/専門職の協力者を1つ入れる</li>
+          </ul>
+        </div>
+        <div class="callout">
+          <h4>公開前の“仕込み”チェック</h4>
+          <ul>
+            <li>用途（資金の使い道）を「実証費用」に固定</li>
+            <li>3分で伝わる構成：課題→解決→次の検証→必要額→返礼</li>
+            <li>写真/動画：試作の変化が分かる素材を用意（作業風景も可）</li>
+            <li>FAQ：医療表現、未成年運用、納期、リスクを先に書く</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="note ok small">
+        公式サイト（募集の雰囲気・掲載ルール確認）：<br/>
+        <a href="https://readyfor.jp/" target="_blank" rel="noopener">READYFOR</a> /
+        <a href="https://camp-fire.jp/" target="_blank" rel="noopener">CAMPFIRE</a> /
+        <a href="https://www.makuake.com/" target="_blank" rel="noopener">Makuake</a><br/>
+        <span class="src">[Source] <a href="https://readyfor.jp/" target="_blank" rel="noopener">READYFOR</a> /
+          <a href="https://camp-fire.jp/" target="_blank" rel="noopener">CAMPFIRE</a> /
+          <a href="https://www.makuake.com/" target="_blank" rel="noopener">Makuake</a></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 受け皿別：助成の当たり方 -->
+  <section id="grants-by-host" class="grid">
+    <div class="card">
+      <h2>3. 今の段階で現実的な助成の当たり方（受け皿別：学校/任意団体/NPO）</h2>
+
+      <div class="note ok">
+        <b>考え方：</b>「助成の種類」より先に、<b>誰が申請主体になれるか（受け皿）</b>を決めると、無駄な調査・書類作りが減ります。
+      </div>
+
+      <div class="split">
+        <div>
+          <h3>3-1. 共通：最短で“当たり”をつける3ステップ</h3>
+          <ol class="small" style="margin:.35rem 0 .45rem 1.2rem">
+            <li>
+              <b>キーワードで横断検索</b>（障害/福祉用具/子ども/教育/ものづくり/探究/地域）
+              ：<a href="https://fields.canpan.info/grant/" target="_blank" rel="noopener">CANPAN FIELDS</a>
+              <a href="https://fields.canpan.info/grant/" target="_blank" rel="noopener">[Source]</a>
+            </li>
+            <li>
+              <b>応募主体要件を確認</b>（個人NGが多い→受け皿を選ぶ）
+              ：<a href="https://www.shakyo.or.jp/guide/sponsor/index.html" target="_blank" rel="noopener">全社協：福祉の助成情報</a>
+              <a href="https://www.shakyo.or.jp/guide/sponsor/index.html" target="_blank" rel="noopener">[Source]</a>
+            </li>
+            <li>
+              <b>書類を“再利用できる型”にする</b>（1枚企画書＋予算＋体制図＋安全配慮）
+            </li>
+          </ol>
+
+          <div class="callout small">
+            <b>書類の型（最低限）</b><br/>
+            ①目的（誰の何をどう改善）／②現状と課題／③次の検証計画（期間・方法）／④必要経費（材料・外注・移動）／⑤体制（保護者/指導者/協力者）／⑥安全配慮（同意・注意事項）
+          </div>
+        </div>
+
+        <div>
+          <h3>3-2. まず“受け皿”を選ぶ目安</h3>
+          <table class="small">
+            <thead>
+              <tr><th>受け皿</th><th>強み</th><th>向く助成の方向性</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>学校</b><br/>(探究/部活/課外)</td>
+                <td>教育文脈に乗せやすい／大人の関与が明確</td>
+                <td>体験・教育系、地域連携系（例：<a href="https://yumekikin.niye.go.jp/jyosei/index.html" target="_blank" rel="noopener">子どもゆめ基金</a>）<a href="https://yumekikin.niye.go.jp/jyosei/index.html" target="_blank" rel="noopener">[Source]</a></td>
+              </tr>
+              <tr>
+                <td><b>任意団体</b><br/>(非営利)</td>
+                <td>動きが速い／地域の協賛を取りやすい</td>
+                <td>福祉・地域課題系（例：<a href="https://www.wam.go.jp/hp/guide-jyosei-outline-tabid-178/" target="_blank" rel="noopener">WAM助成：任意団体も対象</a>）<a href="https://www.wam.go.jp/hp/guide-jyosei-outline-tabid-178/" target="_blank" rel="noopener">[Source]</a></td>
+              </tr>
+              <tr>
+                <td><b>NPO/既存団体と連携</b><br/>(申請代理・共同)</td>
+                <td>助成の実績・会計体制がある</td>
+                <td>福祉基金・助成の採択率が上がりやすい（連携で応募主体要件を満たす）</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <h3>3-3. 受け皿別：進め方（保護者が動きやすい順）</h3>
+
+      <h4 id="grants-school">A) 受け皿＝学校（探究・部活・課外活動）</h4>
+      <div class="split">
+        <div class="callout small">
+          <b>狙い：</b>「教育・探究」として社会課題解決型の活動に位置づけ、助成・協賛を受けやすくする。<br/>
+          <b>向き：</b>個人事業・収益がない段階／保護者の契約負担を減らしたい段階
+        </div>
+        <div class="callout small">
+          <b>進め方（例）</b>
+          <ol style="margin:.35rem 0 .45rem 1.2rem">
+            <li>学校側に「活動の位置づけ（探究/部活）」を確認</li>
+            <li>外部支援の窓口（顧問/教頭/事務）を一本化</li>
+            <li>助成は教育系（例：<a href="https://yumekikin.niye.go.jp/jyosei/index.html" target="_blank" rel="noopener">子どもゆめ基金</a>）を優先 <a href="https://yumekikin.niye.go.jp/jyosei/index.html" target="_blank" rel="noopener">[Source]</a></li>
+            <li>成果物は「検証レポート」「安全配慮」「学び（再現性）」でまとめる</li>
+          </ol>
+        </div>
+      </div>
+
+      <h4 id="grants-group">B) 受け皿＝任意団体（非営利のチーム）</h4>
+      <div class="split">
+        <div class="callout small">
+          <b>狙い：</b>寄付・助成の応募主体を整え、現物支援・地域スポンサーを受けやすくする。<br/>
+          <b>ポイント：</b>規約・会計・責任者を最低限整えると信頼が上がる
+        </div>
+        <div class="callout small">
+          <b>最低限の“整備”チェック</b>
+          <ul>
+            <li>名称、目的、代表、会計担当、連絡先</li>
+            <li>会計：専用口座（または明確な管理ルール）、収支記録</li>
+            <li>対外文書：活動概要1枚、予算、協力者一覧</li>
+          </ul>
+          <div class="muted small">
+            任意団体も対象になり得る助成の例：<a href="https://www.wam.go.jp/hp/guide-jyosei-outline-tabid-178/" target="_blank" rel="noopener">WAM助成概要</a> <a href="https://www.wam.go.jp/hp/guide-jyosei-outline-tabid-178/" target="_blank" rel="noopener">[Source]</a>
+          </div>
+        </div>
+      </div>
+
+      <h4 id="grants-npo">C) 受け皿＝既存NPO/団体と連携（共同実施・申請支援）</h4>
+      <div class="split">
+        <div class="callout small">
+          <b>狙い：</b>助成の「応募主体要件」「会計」「実績」を借りて、採択の現実性を上げる。<br/>
+          <b>向き：</b>活動を早く安定させたい／保護者の事務負担を下げたい
+        </div>
+        <div class="callout small">
+          <b>探し方：</b>
+          <ul>
+            <li>地域の社協・支援センターが把握している助成/団体情報を見る</li>
+            <li>全国の助成情報の入口：<a href="https://www.shakyo.or.jp/guide/sponsor/index.html" target="_blank" rel="noopener">全社協</a> <a href="https://www.shakyo.or.jp/guide/sponsor/index.html" target="_blank" rel="noopener">[Source]</a></li>
+            <li>データベースで「福祉」「障害」「子ども」「ものづくり」で候補抽出：<a href="https://fields.canpan.info/grant/" target="_blank" rel="noopener">CANPAN FIELDS</a> <a href="https://fields.canpan.info/grant/" target="_blank" rel="noopener">[Source]</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="note warn small">
+        <b>注意：</b>助成・寄付は「個人に直接」ではなく「団体に」入る設計が多いです。<br/>
+        そのため、最初に受け皿を決めるほど、申請の手戻り（＝時間と負担）が減ります。
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 信用 -->
+  <section id="trust" class="grid">
+    <div class="card">
+      <h2>4. 信用（医療・安全性）を作る：社会実装の必須条件</h2>
+
+      <div class="note warn">
+        <b>重要：</b>義手/装具の領域は安全性・法規制・適合評価が絡むため、<b>医療・専門職連携</b>が「支援の通りやすさ」も大きく左右します。
+      </div>
+
+      <h3>4-1. 医療機関・専門職との連携（最優先）</h3>
+      <ul>
+        <li>候補：リハビリ施設、整形外科、作業療法、義肢装具士（PO）</li>
+        <li>入口：<a href="https://www.japo.jp/" target="_blank" rel="noopener"><b>公益社団法人 日本義肢装具士協会</b></a>
+          <a href="https://www.japo.jp/" target="_blank" rel="noopener">[Source]</a>
+        </li>
+      </ul>
+
+      <h3>4-2. 規制・相談窓口の“当たり”を早めに付ける</h3>
+      <ul>
+        <li>
+          PMDA（相談業務）：
+          <a href="https://www.pmda.go.jp/review-services/f2f-pre/consultations/0003.html" target="_blank" rel="noopener">
+            医療機器・体外診断用医薬品の相談業務について
+          </a>
+          <a href="https://www.pmda.go.jp/review-services/f2f-pre/consultations/0003.html" target="_blank" rel="noopener">[Source]</a>
+        </li>
+        <li>
+          参考（厚労省資料PDF）：
+          <a href="https://www.mhlw.go.jp/file/05-Shingikai-11121000-Iyakushokuhinkyoku-Soumuka/zaitaku5.pdf" target="_blank" rel="noopener">
+            医療機器の薬事承認等について
+          </a>
+          <a href="https://www.mhlw.go.jp/file/05-Shingikai-11121000-Iyakushokuhinkyoku-Soumuka/zaitaku5.pdf" target="_blank" rel="noopener">[Source]</a>
+        </li>
+      </ul>
+
+      <h3>4-3. お金をかけずに“信用”を作る最低限の型</h3>
+      <ul>
+        <li><b>設計履歴</b>：版管理（V1/V2…）、変更理由、テスト結果</li>
+        <li><b>リスク整理</b>：破損、皮膚トラブル、誤使用、フィット不良、可動部の挟み込み</li>
+        <li><b>使用条件の明記</b>：「対象年齢」「試作品」「医療行為ではない」等</li>
+        <li><b>同意書・免責</b>：試用・実証の範囲の合意（※専門家確認推奨）</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 5 未成年/契約 -->
+  <section id="org" class="grid">
+    <div class="card">
+      <h2>5. 受け皿（未成年の契約・責任・会計）</h2>
+
+      <div class="note warn">
+        <b>未成年の契約</b>は、法定代理人（親権者）の同意がない場合に取り消し得る等の論点があり、
+        企業協賛・共同開発・外注契約では「大人の受け皿」を求められやすいです。<br/>
+        参考：法務省「契約について 学ぼう」（PDF）
+        <a href="https://www.moj.go.jp/content/001349077.pdf" target="_blank" rel="noopener">[Source]</a>
+      </div>
+
+      <h3>5-1. 段階設計（おすすめ）</h3>
+      <table class="small">
+        <thead>
+          <tr><th>段階</th><th>何ができる</th><th>負担が増える/減るポイント</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>個人（いま）</b></td>
+            <td>試作・発信・小さな協力</td>
+            <td class="muted">契約/会計/責任が保護者に集中しやすい（注意）</td>
+          </tr>
+          <tr>
+            <td><b>受け皿</b><br/>（学校/任意団体/協力NPO）</td>
+            <td>寄付・現物支援の受け取り、窓口の一本化</td>
+            <td class="muted">会計透明性が上がるほど支援が入りやすい</td>
+          </tr>
+          <tr>
+            <td><b>法人（必要になったら）</b></td>
+            <td>契約、補助金、知財管理、責任分離</td>
+            <td class="muted">初期は手間もあるが、長期的には保護者負担が下がる</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>5-2. 法人化の“目安”</h3>
+      <ul>
+        <li>企業から「契約主体が必要」と言われた</li>
+        <li>有償提供・継続サポートを始める（責任と会計が増える）</li>
+        <li>2年目以降、補助金・共同研究などで体制要件が必要になった</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 6 知財 -->
+  <section id="ip" class="grid">
+    <div class="card">
+      <h2>6. 知財とオープン戦略：どちらか一択にしない</h2>
+
+      <h3>6-1. まず先行技術を調べる（無料でできる）</h3>
+      <ul>
+        <li>
+          <b><a href="https://www.j-platpat.inpit.go.jp/" target="_blank" rel="noopener">J-PlatPat（INPIT）</a></b>
+          <a href="https://www.j-platpat.inpit.go.jp/" target="_blank" rel="noopener">[Source]</a>
+        </li>
+      </ul>
+
+      <h3>6-2. ハイブリッド戦略（おすすめ）</h3>
+      <ul>
+        <li><b>公開して良い部分</b>：教育的価値が高い一般構造、非コア部品、組立手順の一部</li>
+        <li><b>守る部分</b>：安全性・耐久性・装着快適性に直結するコア機構、評価手法、フィッティングのノウハウ</li>
+        <li>メリット：改良コミュニティが集まりやすく、CSR支援も受けやすい一方で、コアは事業化しやすい</li>
+      </ul>
+
+      <div class="mediaGrid" style="margin-top:10px">
+        <div class="thumb">
+          <img src="https://sspark.genspark.ai/cfimages?u1=msjwTgyfC9GxKjNojvx4ffFJW8s3Mlq9%2FBu1yi8ifeLROLH9cBCKh5gQiKaeNNxiOLPj2%2FYhgK5hOL6Cyx35pwOYg19r3m1XbCkYJ3xSGaeaZ8ebKs08V7eR%2BcKextXmdv8%3D&u2=Zt5f%2FeMocDIcYT2f&width=2560" alt="オープンと協働の概念図（参考）">
+          <div class="cap2">
+            <b>目的：</b>「オープンにする/守る」を説明する視覚補助（支援者・協賛企業向け）<br/>
+            出典：Wikimedia Commons「Openness and Collaboration」
+            <a href="https://commons.wikimedia.org/wiki/File:Openness_and_Collaboration.png" target="_blank" rel="noopener">[Source]</a>
+          </div>
+        </div>
+
+        <div class="thumb">
+          <img src="https://sspark.genspark.ai/cfimages?u1=fimZA5qZHDYYnMRgxBr73nLGSAqclhbDxPfqS4Iywslc1PAVgbdsqwCT8nXeiIjdIQqQkHlyT2jNy7uxjeIKpaC2fb7kSzuIDJ2eWGymZvMJUwaJ8P0sP0RwCJYs&u2=GRMrtckxQQ3u2UGa&width=2560" alt="e-NABLEの紹介記事（参考画像）">
+          <div class="cap2">
+            <b>目的：</b>先行事例（コミュニティ型・オープン寄り）の理解<br/>
+            出典：Opensource.com（記事ページ）
+            <a href="https://opensource.com/life/14/3/3D-printed-hand-enable" target="_blank" rel="noopener">[Source]</a>
+          </div>
+        </div>
+
+        <div class="thumb">
+          <img src="https://sspark.genspark.ai/cfimages?u1=fJ0AA0jA1SHwyVpmp9mQAaJqEccanfJ%2BJ%2B3QKIr%2BrAMTadYBigvgF1oBfuv2djL8aeWl7ihpdB8aFFpxQMgu4yrzQGVYsjnNOYo5qIafiMyrmc1H2SW0OIekU6P%2FOlNM0lfHeDRizu0a8kZsTiJv5obltv7pRllTCWGuYGH6tqCuT33VhS0XgwAXFznTLvCc4QiIufwH%2FW%2FBYFLBJxuKBhO8zPIBr6RG1rzrfuWb&u2=SD6f6Dj%2Bp7cndSEP&width=2560" alt="STL配布サイト（参考）">
+          <div class="cap2">
+            <b>目的：</b>設計データの公開・配布のイメージ理解（公開範囲を議論する材料）<br/>
+            出典：Printables（モデルページ）
+            <a href="https://www.printables.com/model/12224-prosthetic-hand" target="_blank" rel="noopener">[Source]</a>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="margin-top:14px">6-3. 参考：海外の先行事例</h3>
+      <ul>
+        <li>
+          <b><a href="https://enablingthefuture.org/upper-limb-prosthetics/" target="_blank" rel="noopener">Enabling The Future（e-NABLE）：Upper Limb Prosthetics</a></b>
+          <a href="https://enablingthefuture.org/upper-limb-prosthetics/" target="_blank" rel="noopener">[Source]</a>
+        </li>
+        <li>
+          <b><a href="https://3d.nih.gov/collections/prosthetics" target="_blank" rel="noopener">NIH 3D：Prosthetics</a></b>
+          <a href="https://3d.nih.gov/collections/prosthetics" target="_blank" rel="noopener">[Source]</a>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 7 ロードマップ -->
+  <section id="steps" class="grid">
+    <div class="card">
+      <h2>7. 推奨ロードマップ（失敗しにくい進め方）</h2>
+
+      <h3>フェーズ1（現在〜6ヶ月）：助成/現物支援で負担を下げ、クラファンで実績を作る</h3>
+      <ul>
+        <li><b>受け皿決定</b>（学校/任意団体/NPO連携のいずれか）</li>
+        <li><b>助成探索→応募</b>（CANPAN/全社協/助成財団センターを入口に）：
+          <a href="https://fields.canpan.info/grant/" target="_blank" rel="noopener">CANPAN FIELDS</a> <a href="https://fields.canpan.info/grant/" target="_blank" rel="noopener">[Source]</a> ／
+          <a href="https://www.shakyo.or.jp/guide/sponsor/index.html" target="_blank" rel="noopener">全社協</a> <a href="https://www.shakyo.or.jp/guide/sponsor/index.html" target="_blank" rel="noopener">[Source]</a> ／
+          <a href="https://www.jfc.or.jp/" target="_blank" rel="noopener">助成財団センター</a> <a href="https://www.jfc.or.jp/" target="_blank" rel="noopener">[Source]</a>
+        </li>
+        <li><b>現物協賛</b>（材料・部品・プリント協力）で即効の負担減</li>
+        <li><b>医療/専門職の協力者</b>を1名でも確保（信用の土台）：
+          <a href="https://www.japo.jp/" target="_blank" rel="noopener">日本義肢装具士協会</a> <a href="https://www.japo.jp/" target="_blank" rel="noopener">[Source]</a>
+        </li>
+        <li><b>クラファン</b>（用途は実証費用に限定、目標300万円目安）：
+          <a href="https://camp-fire.jp/" target="_blank" rel="noopener">CAMPFIRE</a> /
+          <a href="https://readyfor.jp/" target="_blank" rel="noopener">READYFOR</a> /
+          <a href="https://www.makuake.com/" target="_blank" rel="noopener">Makuake</a>
+          <span class="src">[Source] <a href="https://camp-fire.jp/" target="_blank" rel="noopener">CAMPFIRE</a> / <a href="https://readyfor.jp/" target="_blank" rel="noopener">READYFOR</a> / <a href="https://www.makuake.com/" target="_blank" rel="noopener">Makuake</a></span>
+        </li>
+      </ul>
+
+      <h3>フェーズ2（6ヶ月〜2年）：検証の体系化＋受け皿の安定運用</h3>
+      <ul>
+        <li>試作品→実証（同意・安全手順・記録）</li>
+        <li>スポンサー（CSR/教育枠）獲得、継続的な現物支援ルートを作る</li>
+        <li>規制/相談の当たりをつける（必要に応じPMDA相談の検討）：
+          <a href="https://www.pmda.go.jp/review-services/f2f-pre/consultations/0003.html" target="_blank" rel="noopener">PMDA 相談業務</a>
+          <a href="https://www.pmda.go.jp/review-services/f2f-pre/consultations/0003.html" target="_blank" rel="noopener">[Source]</a>
+        </li>
+      </ul>
+
+      <h3>フェーズ3（2年以降）：事業化/法人化・知財・補助金（必要なら）</h3>
+      <ul>
+        <li>提供モデル（BtoB/BtoC、無償提供/有償提供、サポート範囲）を整理</li>
+        <li>知財・オープン範囲の最適化（先行技術調査：J-PlatPat）：
+          <a href="https://www.j-platpat.inpit.go.jp/" target="_blank" rel="noopener">J-PlatPat</a>
+          <a href="https://www.j-platpat.inpit.go.jp/" target="_blank" rel="noopener">[Source]</a>
+        </li>
+        <li>補助金は「成長資金」として検討（入口：ミラサポplus）：
+          <a href="https://mirasapo-plus.go.jp/" target="_blank" rel="noopener">ミラサポplus</a>
+          <a href="https://mirasapo-plus.go.jp/" target="_blank" rel="noopener">[Source]</a>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 8 次の一手 -->
+  <section id="actions" class="grid">
+    <div class="card">
+      <h2>8. 次の一手（保護者が進めやすいチェックリスト）</h2>
+
+      <div class="split">
+        <div>
+          <h3>最優先（今週〜今月）</h3>
+          <ul>
+            <li><b>受け皿を決める</b>：学校/任意団体/NPO連携（どれが最短で動けるか）</li>
+            <li><b>助成の候補を10件出す</b>（横断検索でOK）：
+              <a href="https://fields.canpan.info/grant/" target="_blank" rel="noopener">CANPAN FIELDS</a> <a href="https://fields.canpan.info/grant/" target="_blank" rel="noopener">[Source]</a>
+            </li>
+            <li><b>“1枚企画書”を作る</b>（目的・検証・予算・体制・安全配慮）</li>
+            <li><b>現物協賛の打診</b>（材料/部品/印刷協力）を3社</li>
+            <li><b>専門職の協力者</b>を1名探す（紹介依頼）：
+              <a href="https://www.japo.jp/" target="_blank" rel="noopener">日本義肢装具士協会</a> <a href="https://www.japo.jp/" target="_blank" rel="noopener">[Source]</a>
+            </li>
+            <li><b>クラファンの仕込み</b>：初期支援者30人、目標300万円、用途は実証費用に固定</li>
+          </ul>
+
+          <div class="note ok small">
+            助成探索の入口：<a href="https://fields.canpan.info/grant/" target="_blank" rel="noopener">CANPAN FIELDS</a> /
+            <a href="https://www.shakyo.or.jp/guide/sponsor/index.html" target="_blank" rel="noopener">全社協</a> /
+            <a href="https://www.jfc.or.jp/" target="_blank" rel="noopener">助成財団センター</a>
+          </div>
+        </div>
+
+        <div>
+          <h3>失敗回避（やってはいけない）</h3>
+          <div class="note bad small">
+            <ul>
+              <li>医療・安全の裏取りなしに「効果」「治る」等の断定</li>
+              <li>試作品段階で納期・性能を過剰に約束（返金/信用毀損リスク）</li>
+              <li>窓口・会計が曖昧なまま寄付・協賛を受ける（トラブル源）</li>
+            </ul>
+          </div>
+          <div class="note warn small">
+            未成年契約の基礎：法務省PDF
+            <a href="https://www.moj.go.jp/content/001349077.pdf" target="_blank" rel="noopener">[Source]</a>
+          </div>
+        </div>
+      </div>
+
+      <h3>支援を集めるための「1枚資料」テンプレ（項目）</h3>
+      <ul>
+        <li>課題：コスト、成長による買い替え負担、調整の難しさ</li>
+        <li>解決：3Dプリンタでの短納期・カスタム性・低コスト化（試作/検証段階と明記）</li>
+        <li>次の検証：安全・耐久・装着性・フィット調整の試験計画</li>
+        <li>必要支援：現金/現物（材料・部品・プリント協力）/技術/医療連携</li>
+        <li>支援者メリット：CSR、教育、地域貢献、広報協力、共同研究</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 9 Links -->
+  <section id="links" class="grid">
+    <div class="card">
+      <h2>9. リンク集（公式・入口）</h2>
+
+      <h3>助成・寄付（探し方の入口）</h3>
+      <ul>
+        <li><a href="https://fields.canpan.info/grant/" target="_blank" rel="noopener">CANPAN FIELDS：助成制度一覧</a> <a href="https://fields.canpan.info/grant/" target="_blank" rel="noopener">[Source]</a></li>
+        <li><a href="https://www.shakyo.or.jp/guide/sponsor/index.html" target="_blank" rel="noopener">全国社会福祉協議会：福祉の助成情報</a> <a href="https://www.shakyo.or.jp/guide/sponsor/index.html" target="_blank" rel="noopener">[Source]</a></li>
+        <li><a href="https://www.jfc.or.jp/" target="_blank" rel="noopener">助成財団センター</a> <a href="https://www.jfc.or.jp/" target="_blank" rel="noopener">[Source]</a></li>
+      </ul>
+
+      <h3>団体の受け皿があると狙える助成（例）</h3>
+      <ul>
+        <li><a href="https://www.wam.go.jp/hp/cat/wamjosei/" target="_blank" rel="noopener">WAM助成（WAM NET）</a> <a href="https://www.wam.go.jp/hp/guide-jyosei-outline-tabid-178/" target="_blank" rel="noopener">[Source]</a></li>
+        <li><a href="https://www.akaihane.or.jp/kikin/" target="_blank" rel="noopener">赤い羽根福祉基金</a> <a href="https://www.akaihane.or.jp/kikin/" target="_blank" rel="noopener">[Source]</a></li>
+      </ul>
+
+      <h3>教育・探究（個人段階と相性が良い）</h3>
+      <ul>
+        <li><a href="https://yumekikin.niye.go.jp/jyosei/index.html" target="_blank" rel="noopener">子どもゆめ基金</a> <a href="https://yumekikin.niye.go.jp/jyosei/index.html" target="_blank" rel="noopener">[Source]</a></li>
+        <li><a href="https://www.jss.or.jp/fukyu/mentor/index.html" target="_blank" rel="noopener">日本科学協会：サイエンスメンタープログラム</a> <a href="https://www.jss.or.jp/fukyu/mentor/index.html" target="_blank" rel="noopener">[Source]</a></li>
+        <li><a href="https://www.jst.go.jp/cpse/stella/" target="_blank" rel="noopener">JST：次世代科学技術チャレンジプログラム</a> <a href="https://www.jst.go.jp/cpse/stella/" target="_blank" rel="noopener">[Source]</a></li>
+      </ul>
+
+      <h3>クラウドファンディング（公式）</h3>
+      <ul>
+        <li><a href="https://camp-fire.jp/" target="_blank" rel="noopener">CAMPFIRE</a> <span class="src">[Source] <a href="https://camp-fire.jp/" target="_blank" rel="noopener">CAMPFIRE</a></span></li>
+        <li><a href="https://readyfor.jp/" target="_blank" rel="noopener">READYFOR</a> <span class="src">[Source] <a href="https://readyfor.jp/" target="_blank" rel="noopener">READYFOR</a></span></li>
+        <li><a href="https://www.makuake.com/" target="_blank" rel="noopener">Makuake</a> <span class="src">[Source] <a href="https://www.makuake.com/" target="_blank" rel="noopener">Makuake</a></span></li>
+      </ul>
+
+      <h3>医療・専門職・規制（参考）</h3>
+      <ul>
+        <li><a href="https://www.japo.jp/" target="_blank" rel="noopener">公益社団法人 日本義肢装具士協会</a> <a href="https://www.japo.jp/" target="_blank" rel="noopener">[Source]</a></li>
+        <li><a href="https://www.pmda.go.jp/review-services/f2f-pre/consultations/0003.html" target="_blank" rel="noopener">PMDA：医療機器・体外診断用医薬品の相談業務</a> <a href="https://www.pmda.go.jp/review-services/f2f-pre/consultations/0003.html" target="_blank" rel="noopener">[Source]</a></li>
+        <li><a href="https://www.mhlw.go.jp/file/05-Shingikai-11121000-Iyakushokuhinkyoku-Soumuka/zaitaku5.pdf" target="_blank" rel="noopener">厚労省：医療機器の薬事承認等について（PDF）</a> <a href="https://www.mhlw.go.jp/file/05-Shingikai-11121000-Iyakushokuhinkyoku-Soumuka/zaitaku5.pdf" target="_blank" rel="noopener">[Source]</a></li>
+      </ul>
+
+      <h3>知財（調査）</h3>
+      <ul>
+        <li><a href="https://www.j-platpat.inpit.go.jp/" target="_blank" rel="noopener">J-PlatPat（INPIT）</a> <a href="https://www.j-platpat.inpit.go.jp/" target="_blank" rel="noopener">[Source]</a></li>
+      </ul>
+
+      <h3>未成年の契約（参考）</h3>
+      <ul>
+        <li><a href="https://www.moj.go.jp/content/001349077.pdf" target="_blank" rel="noopener">法務省：契約について 学ぼう（PDF）</a> <a href="https://www.moj.go.jp/content/001349077.pdf" target="_blank" rel="noopener">[Source]</a></li>
+      </ul>
+
+      <h3>オープン/先行事例（参考）</h3>
+      <ul>
+        <li><a href="https://enablingthefuture.org/upper-limb-prosthetics/" target="_blank" rel="noopener">Enabling The Future：Upper Limb Prosthetics</a> <a href="https://enablingthefuture.org/upper-limb-prosthetics/" target="_blank" rel="noopener">[Source]</a></li>
+        <li><a href="https://3d.nih.gov/collections/prosthetics" target="_blank" rel="noopener">NIH 3D：Prosthetics</a> <a href="https://3d.nih.gov/collections/prosthetics" target="_blank" rel="noopener">[Source]</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 10 Media -->
+  <section id="media" class="grid">
+    <div class="card">
+      <h2>10. 参考画像・動画（“何の参考か”＝用途つき）</h2>
+
+      <div class="note">
+        ここは「雰囲気の参考」ではなく、<b>保護者説明／協賛提案／クラファンページ／学校・医療連携の説明</b>に使えるよう、<b>用途（目的）</b>を明記しています。
+      </div>
+
+      <h3>参考画像（クリックで出典へ）</h3>
+      <div class="mediaGrid">
+        <a class="thumb" href="https://commons.wikimedia.org/wiki/File:3d_printed_hand_(15642062429).jpg" target="_blank" rel="noopener">
+          <img src="https://sspark.genspark.ai/cfimages?u1=2l5LV4AkKgSH66IyyjIA0RhJIZrGQLuvJv2xTd%2Fj%2FrSn8nM25fZnYTlVy2j53ny%2FEO1TtMt4Cln3N126XXqrJcepehCnYKtW6pFiQqmoMjlcqBC6CZYBmtRD1%2Ft52mJSPvYq%2BbDeKcic&u2=pfq403GBluaOlJhn&width=2560" alt="3Dプリント義手（参考）" />
+          <div class="cap2">
+            <b>目的：</b>「3Dプリント義手」の完成イメージ共有（保護者説明・協賛提案の冒頭スライド向け）<br/>
+            出典：Wikimedia Commons（3D printed hand） <span class="src"><a href="https://commons.wikimedia.org/wiki/File:3d_printed_hand_(15642062429).jpg" target="_blank" rel="noopener">[Source]</a></span>
+          </div>
+        </a>
+
+        <a class="thumb" href="https://commons.wikimedia.org/wiki/File:3D_printer_in_a_school_workshop.jpg" target="_blank" rel="noopener">
+          <img src="https://sspark.genspark.ai/cfimages?u1=FJ1LHAVQezhnB5t1Ic0I0sm23vvCf0O%2Bd%2B4nmErDYukLU%2B%2FPHXuSZwV20K6xDTgb%2Fixl%2BS1LltR5HfWs6lUy95znWOxADzZ15x4bykKdruJKiaNtcrCNEPVZ9TF79WmIVZE4mEgUJQ%3D%3D&u2=%2BCODVpHdPsxB2Knn&width=2560" alt="学校工房の3Dプリンタ（参考）" />
+          <div class="cap2">
+            <b>目的：</b>「教育・探究（学校/地域）と結びつけた支援」の説明（助成申請や学校連携の文脈で有効）<br/>
+            出典：Wikimedia Commons（3D printer in a school workshop） <span class="src"><a href="https://commons.wikimedia.org/wiki/File:3D_printer_in_a_school_workshop.jpg" target="_blank" rel="noopener">[Source]</a></span>
+          </div>
+        </a>
+
+        <a class="thumb" href="https://pxhere.com/en/photo/1444691" target="_blank" rel="noopener">
+          <img src="https://sspark.genspark.ai/cfimages?u1=C0NhWbvwE0%2FPgJmy4jSxltWhv6Vbc%2FsXjZxshYg76luYBEFDvhBZsZa%2FiaN4KWpdZ7ZDCRiNV5V22CRA0rv1TMbZKiJS%2B8NUjp8KTQvlL0%2BZ36CT7Bwx2tVkNdP%2FauNc%2BpWDMmLbbkkeUOsSKryJWiGTat7OmzB7YqwuBNQe%2F16cZOVq4McHV4RsTLnKNPDrepOEwiqTJr5UgtoLfuY9r1hlATQBukl4uJ3NGJ0VVOzeDvzXyid4ea6igtF2d44VmNWAU%2BuXDlqIJNKKOLMHnJ3wxeLnQaq4%2FmzH%2F4n%2BzDs6Ycz4W6eBGnzOjV7M8UQXnyWzMvqtN0LZ7WqC5EpF1zyEVp7umaZJ5ATalTbHmReWeyJIyfNvs7rVSFA1YcMPHtw3nGhidEcMEcLWr59A6PcyEorNswyaGZYio2cUjpAT014HfBZ9hCfcWkXeTtdQZUiqPd8VNxRLD8aT8A0Y%2BWYWMVurorj%2BT47KTyku4sup6HwE0rbefdvDJMNR6mkRn8uldM2gJ9qYXTQAIzY%3D&u2=cHMesDmrCURmsWff&width=2560" alt="クラウドファンディング（参考）" />
+          <div class="cap2">
+            <b>目的：</b>クラファン説明資料の挿絵（「共感を資金化する」説明の視覚補助）<br/>
+            出典：PxHere（crowdfunding） <span class="src"><a href="https://pxhere.com/en/photo/1444691" target="_blank" rel="noopener">[Source]</a></span>
+          </div>
+        </a>
+      </div>
+
+      <h3 style="margin-top:14px">参考動画（YouTube）</h3>
+      <ul>
+        <li>
+          <a href="https://www.youtube.com/watch?v=Cl8ijPGEKO8" target="_blank" rel="noopener">
+            How 3-D-Printed Prosthetic Hands Are Changing These Kids’ Lives（National Geographic）
+          </a><br/>
+          <span class="muted small"><b>目的：</b>「社会的意義」「当事者の価値」「ストーリーの組み立て」を保護者・支援者に伝える参考（クラファン構成にも有効）。</span>
+        </li>
+        <li style="margin-top:10px">
+          <a href="https://www.youtube.com/watch?v=H4Fwn3RHa14" target="_blank" rel="noopener">
+            e-NABLE -- volunteers changing the world with 3D-printed prosthetics（TEDx Talks）
+          </a><br/>
+          <span class="muted small"><b>目的：</b>「コミュニティ型（オープン含む）で広がるモデル」の理解。協賛企業に“世界観”を伝える材料。</span>
+        </li>
+        <li style="margin-top:10px">
+          <a href="https://www.youtube.com/watch?v=uGnJXSAahLA" target="_blank" rel="noopener">
+            e-NABLE Arm Prosthetics - Ultimaker: 3D Printing Story（UltiMaker）
+          </a><br/>
+          <span class="muted small"><b>目的：</b>「企業（3Dプリンタ企業）×社会課題」の事例。スポンサー提案（現物支援・技術支援）の説明で使える。</span>
+        </li>
+      </ul>
+
+      <div class="note warn small">
+        ※動画・画像は「同じものを作る」ためではなく、<b>説明・合意形成・支援獲得のための“伝え方”の参考</b>として位置づけています。
+      </div>
+    </div>
+  </section>
+
+  <!-- Disclaimer -->
+  <section class="grid">
+    <div class="card">
+      <h2>免責（大事）</h2>
+      <p class="muted small">
+        本ページは、事業・資金・連携の整理のための一般情報です。医療機器該当性、薬機法、契約、免責、個別の提供方法（販売/無償提供/試用）については、
+        必ず専門家（医療機関、義肢装具士、行政窓口、法務・会計）へ確認してください。
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div>更新日：2026-03-20（UTC） / ＫＡＲＡコンサルティング株式会社</div>
+</footer>
+
+</body>
+</html>
